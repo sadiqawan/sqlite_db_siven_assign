@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:session11_sqlite_db/db/database_helper.dart';
 import 'package:session11_sqlite_db/models/student.dart';
@@ -32,16 +33,20 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
           child: ListView(
             children: [
               TextFormField(
+
                 decoration: const InputDecoration(
                   hintText: 'Name',
                   border: OutlineInputBorder(),
                 ),
+                keyboardType: TextInputType.text,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+(?:\.\d+)?$')),
+                ],
                 validator: (text) {
                   if (text == null || text.isEmpty) {
                     return 'Please provide value';
                   }
-
-                  name = text;
+                  name = text.trim();
                   return null;
                 },
               ),
@@ -53,12 +58,15 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                   hintText: 'Email',
                   border: OutlineInputBorder(),
                 ),
+                inputFormatters:<TextInputFormatter> [
+                  FilteringTextInputFormatter.allow(RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")),
+                ],
+                keyboardType: TextInputType.emailAddress,
                 validator: (text) {
                   if (text == null || text.isEmpty) {
                     return 'Please provide value';
                   }
-
-                  email = text;
+                  email = text.trim();
                   return null;
                 },
               ),
@@ -70,12 +78,13 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                   hintText: 'Mobile',
                   border: OutlineInputBorder(),
                 ),
+                keyboardType: TextInputType.phone,
                 validator: (text) {
                   if (text == null || text.isEmpty) {
                     return 'Please provide value';
                   }
 
-                  mobile = text;
+                  mobile = text.trim();
                   return null;
                 },
               ),
@@ -150,17 +159,19 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                         uni: uni,
                       );
 
-                      int result = await DatabaseHelper.instance.saveStudent(student);
+                      int result =
+                          await DatabaseHelper.instance.saveStudent(student);
 
-                      if( result > 0 ){
+                      if (result > 0) {
                         print(result);
-                        Fluttertoast.showToast(msg: 'Record Saved', backgroundColor: Colors.green);
+                        Fluttertoast.showToast(
+                            msg: 'Record Saved', backgroundColor: Colors.green);
 
                         formKey.currentState!.reset();
-                      }else{
-                        print(result);
-                        Fluttertoast.showToast(msg: 'Failed', backgroundColor: Colors.red);
+                      } else {
 
+                        Fluttertoast.showToast(
+                            msg: 'Failed', backgroundColor: Colors.red);
                       }
                     }
                   },
